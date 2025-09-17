@@ -7,3 +7,5 @@ livekit-plugins-noise_cancellation
 langchain-experimental
 langchain-openai
 tabulate
+fastapi
+uvicorn
