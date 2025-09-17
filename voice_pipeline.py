@@ -218,4 +218,32 @@ async def entrypoint(ctx: agents.JobContext):
 if __name__ == "__main__":
     agents.cli.run_app(agents.WorkerOptions(entrypoint_fnc=entrypoint))
     
+
+import os
+import threading
+from fastapi import FastAPI
+import uvicorn
+
+from livekit import agents
+# (your existing imports)
+
+# --- Minimal healthcheck server ---
+app = FastAPI()
+
+@app.get("/")
+def health():
+    return {"status": "ok"}
+
+def run_web_server():
+    uvicorn.run(app, host="0.0.0.0", port=int(os.getenv("PORT", 8000)))
+
+# --- Start both web server + LiveKit agent ---
+if __name__ == "__main__":
+    # Start web server in background thread
+    threading.Thread(target=run_web_server, daemon=True).start()
+
+    # Run LiveKit worker (your existing entrypoint)
+    agents.cli.run_app(agents.WorkerOptions(entrypoint_fnc=entrypoint))
+
+    
     
